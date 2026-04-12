@@ -1,1 +1,7 @@
 # CorrectionPaper
+fastapi
+uvicorn
+google-generativeai
+python-multipart
+pillow
+python-dotenv
