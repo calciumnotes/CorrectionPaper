@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Upload Student Exam</h2>
+    <input type="file" id="examFile">
+    <input type="text" id="answerKey" placeholder="Correct Answer">
+    <button onclick="uploadAndGrade()">Grade Now</button>
+    <p id="result"></p>
+
+    <script>
+        async function uploadAndGrade() {
+            const file = document.getElementById('examFile').files[0];
+            const key = document.getElementById('answerKey').value;
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('answer_key', key);
+
+            const response = await fetch('http://localhost:8000/grade', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            document.getElementById('result').innerText = JSON.stringify(data);
+        }
+    </script>
+</body>
+</html>
