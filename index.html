@@ -57,7 +57,7 @@
             <div class="update-left">
                 <span class="update-badge">NEW</span>
                 <span class="update-message" id="updateMessage">
-                    Loading Updates...
+                    SPOM Set C & D Updates Released!
                 </span>
             </div>
             <div class="update-actions">
@@ -69,11 +69,44 @@
         <div class="notice">
             <h1 class="in">IMPORTANT NOTICE</h1>
             <p>
-                <strong>Calcium Notes</strong> provides lucid workbooks for 
-                <strong>Financial Reporting, Financial Management, and Taxation</strong>.
+                <strong>Calcium Notes</strong> is a website designed to provide lucid and focused workbooks that assist
+                students in understanding the subject matter. It covers all important topics to enhance the quality
+                of learning in <strong>Financial Reporting, Financial Management, and Taxation</strong>, including
+                the fundamental concepts of these subjects.
             </p>
+
             <h2 class="dis">DISCLAIMER</h2>
+            <p>
+                The contents of this publication do not necessarily constitute or imply endorsement, recommendation,
+                or favouring by any institution.
+            </p>
             <p>This publication is intended solely for general reading and educational purposes.</p>
+            <p>
+                The statements, explanations, and concepts presented are of a general nature and may not take into
+                account the specific objectives, needs, circumstances, or situations of any individual user, reader,
+                organization, or institution. Accordingly, Calcium Notes shall not be responsible for any decision,
+                action, or outcome arising from reliance on the information contained herein.
+            </p>
+            <p>
+                This publication may include information, statements, opinions, statistics, and materials obtained
+                from sources believed to be reliable. While every effort has been made to ensure accuracy and avoid
+                errors, no guarantees or warranties of any kind are provided regarding the completeness or correctness
+                of the content.
+            </p>
+            <p>
+                As continuous research and updates are taking place across these knowledge streams, Calcium Notes does
+                not warrant the absolute accuracy, adequacy, or completeness of the information and expressly
+                disclaims any liability for errors or omissions.
+            </p>
+            <p>
+                Calcium Notes shall not accept any legal liability whatsoever arising from the use of the information
+                contained in this publication.
+            </p>
+            <p>
+                While the content of Calcium Notes is largely based on ICAI study material, Calcium Notes does not
+                guarantee that all topics of ICAI material are fully or completely covered.
+            </p>
+
             <div class="footer-note">
                 © 2026 Calcium Notes. No Rights Reserved. Content may be used freely for educational purposes.
             </div>
@@ -170,7 +203,7 @@
 
             <div class="rm-panel panel-notes">
                 <div class="rm-panel-label">📝 Quick Notes</div>
-                <textarea class="note-area" id="noteArea" placeholder="Jot formulas..."></textarea>
+                <textarea class="note-area" id="noteArea" placeholder="Jot formulas, key points..."></textarea>
                 <div class="note-footer">
                     <span id="noteChars">0 chars</span>
                     <button class="note-save" onclick="noteSave()">💾 Save</button>
@@ -224,8 +257,9 @@
            MOTIVATION LOGIC
         ========================================= */
         const quotes = [
-            { text: "Of the Adityas I am Visnu, of lights i am the radiant sun...", author: "Sri Krishna" },
-            { text: "Success comes from consistency.", author: "Marie Forleo" },
+            { text: "Of the Adityas I am Visnu, of lights i am the radiant sun, of the maruts i am Marici, and amoung the stars i am the Moon", author: "Sri Krishna" },
+            { text: "Success doesn't come from what you do occasionally, it comes from consistency.", author: "Marie Forleo" },
+            { text: "Discipline is choosing between what you want now and what you want most.", author: "Abraham Lincoln" },
             { text: "Dream big. Start small. Act now.", author: "Robin Sharma" },
             { text: "You can sleep When you are Dead.", author: "Max Verstappen"}
         ];
@@ -263,7 +297,7 @@
             document.getElementById("rmClockSec").textContent = ":" + S;
             document.getElementById("rmClockDate").textContent = now.toDateString();
             const h = now.getHours();
-            document.getElementById("rmGreeting").textContent = h < 12 ? "Good Morning ☀️" : h < 17 ? "Good Afternoon ⚡" : "Night Study 🌟";
+            document.getElementById("rmGreeting").textContent = h < 12 ? "Good Morning ☀️" : h < 17 ? "Good Afternoon ⚡" : h < 21 ? "Good Evening 🌙" : "Night Study 🌟";
             alarmCheck(H + ":" + M);
         }
         setInterval(tickClock, 1000);
@@ -280,15 +314,16 @@
             return (parseInt(document.getElementById("tHr").value) || 0) * 3600 + (parseInt(document.getElementById("tMin").value) || 0) * 60 + (parseInt(document.getElementById("tSec").value) || 0);
         }
         function fmtTime(s) {
-            const m = Math.floor((s % 3600) / 60), sec = s % 60;
-            return String(m).padStart(2,'0') + ":" + String(sec).padStart(2,'0');
+            const h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+            return h ? String(h).padStart(2,'0')+":"+String(m).padStart(2,'0')+":"+String(sec).padStart(2,'0') : String(m).padStart(2,'0')+":"+String(sec).padStart(2,'0');
         }
         function timerStart() {
             if (timerOn) return;
             if (!timerLeft) timerLeft = getTimerSecs();
+            if (!timerLeft) return;
             timerOn = true;
             timerIv = setInterval(() => {
-                if (--timerLeft <= 0) { clearInterval(timerIv); timerOn = false; beep(); toastShow("⏰ Done!", "Timer finished."); }
+                if (--timerLeft <= 0) { clearInterval(timerIv); timerOn = false; beep(); toastShow("⏰ Done!", "Study session complete."); }
                 document.getElementById("timerDisp").textContent = fmtTime(timerLeft);
             }, 1000);
         }
@@ -299,11 +334,15 @@
         function swStart() {
             if (swOn) return; swOn = true;
             const t0 = Date.now() - swMs;
-            swIv = setInterval(() => { swMs = Date.now() - t0; document.getElementById("swDisp").textContent = (swMs/1000).toFixed(1) + "s"; }, 100);
+            swIv = setInterval(() => { swMs = Date.now() - t0; document.getElementById("swDisp").textContent = fmtSW(swMs); }, 100);
+        }
+        function fmtSW(ms) {
+            const m = Math.floor(ms/60000), s = Math.floor((ms%60000)/1000), t = Math.floor((ms%1000)/100);
+            return String(m).padStart(2,'0')+":"+String(s).padStart(2,'0')+"."+t;
         }
         function swPause() { clearInterval(swIv); swOn = false; }
         function swReset() { swPause(); swMs = 0; swLaps = []; document.getElementById("swDisp").textContent = "00:00.0"; document.getElementById("swLaps").innerHTML = ""; }
-        function swLap() { swLaps.push((swMs/1000).toFixed(1) + "s"); document.getElementById("swLaps").innerHTML = swLaps.join(', '); }
+        function swLap() { swLaps.push(fmtSW(swMs)); document.getElementById("swLaps").innerHTML = swLaps.map((l,i) => `<div>Lap ${i+1}: ${l}</div>`).join(''); }
 
         /* ── ALARMS & TASKS ── */
         let alarms = [], alarmFired = {}, tasks = [];
@@ -313,11 +352,11 @@
         }
         function alarmDel(id) { alarms = alarms.filter(a => a.id !== id); renderAlarms(); }
         function renderAlarms() {
-            document.getElementById("alarmList").innerHTML = alarms.map(a => `<div class="al-item">${a.time} - ${a.label} <button onclick="alarmDel(${a.id})">🗑</button></div>`).join('');
+            document.getElementById("alarmList").innerHTML = alarms.map(a => `<div class="al-item" style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.05);">${a.time} - ${a.label} <button onclick="alarmDel(${a.id})" style="background:none; border:none; cursor:pointer;">🗑</button></div>`).join('');
         }
         function alarmCheck(hm) {
             alarms.forEach(a => {
-                if (a.time === hm && !alarmFired[a.id]) { alarmFired[a.id] = true; beep(); toastShow("🔔 " + a.label, "Time's up!"); setTimeout(() => delete alarmFired[a.id], 60000); }
+                if (a.time === hm && !alarmFired[a.id]) { alarmFired[a.id] = true; renderAlarms(); beep(); toastShow("🔔 " + a.label, "Time: " + a.time); setTimeout(() => delete alarmFired[a.id], 60000); }
             });
         }
 
@@ -330,19 +369,37 @@
         function renderTasks() {
             document.getElementById("tkTotal").textContent = tasks.length;
             document.getElementById("tkDone").textContent = tasks.filter(x => x.done).length;
+            document.getElementById("tkPend").textContent = tasks.length - tasks.filter(x => x.done).length;
             document.getElementById("taskList").innerHTML = tasks.map(t => `
-                <div class="tk-item">
-                    <span class="${t.done ? 'done' : ''}" onclick="taskToggle(${t.id})">${t.done ? '✅' : '⬜'} ${t.txt} [${t.pri}]</span>
-                    <button onclick="taskDel(${t.id})">🗑</button>
+                <div class="tk-item" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span style="${t.done ? 'text-decoration:line-through; color:gray;' : ''}" onclick="taskToggle(${t.id})">${t.done ? '✅' : '⬜'} ${t.txt} [${t.pri}]</span>
+                    <button onclick="taskDel(${t.id})" style="background:none; border:none; cursor:pointer;">🗑</button>
                 </div>`).join('');
         }
 
-        /* ── NOTES & UTILS ── */
-        function noteSave() { localStorage.setItem("cn_notes", document.getElementById("noteArea").value); }
-        window.onload = () => { document.getElementById("noteArea").value = localStorage.getItem("cn_notes") || ""; renderTasks(); };
+        /* ── TOAST LOGIC ── */
+        function toastShow(title, label) {
+            const toast = document.getElementById("alarmToast");
+            document.getElementById("toastTitle").textContent = title;
+            document.getElementById("toastLabel").textContent = label;
+            toast.style.display = "flex";
+            setTimeout(() => { toast.classList.add("show"); }, 10);
+            setTimeout(toastDismiss, 10000);
+        }
+        function toastDismiss() { 
+            const toast = document.getElementById("alarmToast");
+            toast.classList.remove("show");
+            setTimeout(() => { toast.style.display = "none"; }, 400);
+        }
 
-        function toastShow(t, l) { document.getElementById("toastTitle").textContent = t; document.getElementById("toastLabel").textContent = l; document.getElementById("alarmToast").classList.add("show"); }
-        function toastDismiss() { document.getElementById("alarmToast").classList.remove("show"); }
+        /* ── NOTES & PERSISTENCE ── */
+        function noteSave() { localStorage.setItem("cn_notes", document.getElementById("noteArea").value); }
+        window.onload = () => { 
+            document.getElementById("noteArea").value = localStorage.getItem("cn_notes") || ""; 
+            renderTasks();
+            showRandomQuote();
+        };
+
         function beep() {
             if (!audioCtx) return;
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
