@@ -597,30 +597,76 @@ footer {
 .note-save:hover { background: rgba(59,130,246,0.25); }
 
 /* ── ALARM TOAST ── */
+/* ── ALARM TOAST ── */
 .alarm-toast {
-    position: fixed; bottom: 28px; left: 50%;
-    transform: translateX(-50%) translateY(120px);
+    position: fixed; 
+    bottom: 28px; 
+    left: 50%;
+    /* Pushed down further (180px) and scaled down to hide shadows/glow */
+    transform: translateX(-50%) translateY(180px) scale(0.9);
     background: rgba(15,23,42,0.98);
     border: 1px solid #3b82f6;
-    color: #e2e8f0; border-radius: 16px;
+    color: #e2e8f0; 
+    border-radius: 16px;
     padding: 18px 28px;
-    display: flex; align-items: center; gap: 16px;
+    display: flex; 
+    align-items: center; 
+    gap: 16px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(59,130,246,0.2);
     z-index: 99999;
-    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
     min-width: 260px;
+    
+    /* Added visibility and opacity for a clean hide */
+    opacity: 0;
+    visibility: hidden;
+    
+    /* Added 'all' to transition for smooth fading and scaling */
+    transition: all 0.4s cubic-bezier(.34, 1.56, .64, 1);
 }
-.alarm-toast.show { transform: translateX(-50%) translateY(0); }
-.toast-icon { font-size: 2rem; }
-.toast-body h4 { font-size: 0.95rem; font-weight: 700; color: #93c5fd; }
-.toast-body p  { font-size: 0.82rem; color: #64748b; margin-top: 2px; }
+
+/* Updated .show class - This brings it onto the screen perfectly */
+.alarm-toast.show {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Toast Content Styles */
+.toast-icon { 
+    font-size: 2rem; 
+}
+
+.toast-body h4 { 
+    font-size: 0.95rem; 
+    font-weight: 700; 
+    color: #93c5fd; 
+    margin: 0; /* Prevents unwanted spacing */
+}
+
+.toast-body p { 
+    font-size: 0.82rem; 
+    color: #64748b; 
+    margin-top: 2px; 
+}
+
 .toast-dismiss {
-    margin-left: auto; background: #2563eb;
-    color: white; border: none; cursor: pointer;
-    padding: 8px 14px; border-radius: 8px;
+    margin-left: auto; 
+    background: #2563eb;
+    color: white; 
+    border: none; 
+    cursor: pointer;
+    padding: 8px 14px; 
+    border-radius: 8px;
     font-family: "Segoe UI", Arial, sans-serif;
-    font-weight: 700; font-size: 0.78rem;
+    font-weight: 700; 
+    font-size: 0.78rem;
+    transition: background 0.3s;
 }
+
+.toast-dismiss:hover {
+    background: #1e40af; /* Darker blue on hover */
+}
+
 
 /* ── ANIMATIONS ── */
 @keyframes ring-pulse {
