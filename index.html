@@ -1,26 +1,355 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcium Notes</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="icon" href="./fevicol.png" type="image/png">
+
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YYJ8R39EXM"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-YYJ8R39EXM');
+    </script>
+</head>
+
 <body>
-    <h2>Upload Student Exam</h2>
-    <input type="file" id="examFile">
-    <input type="text" id="answerKey" placeholder="Correct Answer">
-    <button onclick="uploadAndGrade()">Grade Now</button>
-    <p id="result"></p>
+    <button class="read-mode-trigger" onclick="openReadMode()">
+        <span>📖</span> Read Mode
+    </button>
+
+    <div class="page">
+        <div class="logo">
+            <model-viewer 
+                class="floating-logo"
+                src="./logo.glb"
+                auto-rotate
+                auto-rotate-delay="0"
+                rotation-per-second="20deg"
+                camera-controls
+                disable-zoom
+                exposure="1.4"
+                shadow-intensity="1.5"
+                style="width: 95%; max-width: 650px; height: 400px;">
+            </model-viewer>
+        </div>
+
+        <div class="button">
+            <a href="./bin/exam/examcover.html">EXAM</a>
+            <a href="./bin/notes/notes.html">NOTES</a>
+            <a href="./bin/Resources/resources.html">RESOURCES</a>
+        </div>
+
+        <div class="motivation-box">
+            <p id="motivationText">
+                <span id="quote"></span><br>
+                <span id="motivationAuthor"></span>
+            </p>
+        </div>
+    
+        <div class="update-banner" id="updateBanner">
+            <div class="update-left">
+                <span class="update-badge">NEW</span>
+                <span class="update-message" id="updateMessage">
+                    Loading Updates...
+                </span>
+            </div>
+            <div class="update-actions">
+                <a href="#" id="updateLink" class="update-link">View Update</a>
+                <span class="update-close" onclick="closeUpdate()">✕</span>
+            </div>
+        </div>
+
+        <div class="notice">
+            <h1 class="in">IMPORTANT NOTICE</h1>
+            <p>
+                <strong>Calcium Notes</strong> provides lucid workbooks for 
+                <strong>Financial Reporting, Financial Management, and Taxation</strong>.
+            </p>
+            <h2 class="dis">DISCLAIMER</h2>
+            <p>This publication is intended solely for general reading and educational purposes.</p>
+            <div class="footer-note">
+                © 2026 Calcium Notes. No Rights Reserved. Content may be used freely for educational purposes.
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Contact Us <br>
+        EMAIL: <a href="mailto:calciumnotes@gmail.com">calciumnotes@gmail.com</a>
+    </footer>
+
+    <div id="readModeOverlay">
+        <div class="rm-header">
+            <div class="rm-brand">📖 Calcium <span>Read Mode</span></div>
+            <button class="rm-exit-btn" onclick="closeReadMode()">✕ Exit Read Mode</button>
+        </div>
+
+        <div class="rm-body">
+            <div class="rm-panel panel-clock">
+                <div class="rm-panel-label">🕐 Live Clock</div>
+                <div class="clock-wrap">
+                    <div>
+                        <span class="clock-hm" id="rmClockHM">00:00</span>
+                        <span class="clock-sec" id="rmClockSec">:00</span>
+                    </div>
+                    <div class="clock-date-str" id="rmClockDate"></div>
+                    <div class="clock-greeting" id="rmGreeting"></div>
+                </div>
+            </div>
+
+            <div class="rm-panel panel-timer">
+                <div class="rm-panel-label">⏱ Timer & Stopwatch</div>
+                <div class="t-tabs">
+                    <button class="t-tab on" id="ttabTimer" onclick="setTimerTab('timer')">⏲ Timer</button>
+                    <button class="t-tab" id="ttabSW" onclick="setTimerTab('sw')">⏱ Stopwatch</button>
+                </div>
+
+                <div id="timerSection">
+                    <div class="t-inputs">
+                        <input class="t-num" type="number" id="tHr" value="00" min="0" max="23">
+                        <span class="t-sep">:</span>
+                        <input class="t-num" type="number" id="tMin" value="25" min="0" max="59">
+                        <span class="t-sep">:</span>
+                        <input class="t-num" type="number" id="tSec" value="00" min="0" max="59">
+                    </div>
+                    <div class="t-display" id="timerDisp">25:00</div>
+                    <div class="t-btns">
+                        <button class="t-btn go" onclick="timerStart()">▶ Start</button>
+                        <button class="t-btn stop" onclick="timerPause()">⏸ Pause</button>
+                        <button class="t-btn rst" onclick="timerReset()">↺ Reset</button>
+                    </div>
+                </div>
+
+                <div id="swSection" style="display:none">
+                    <div class="t-display" id="swDisp">00:00.0</div>
+                    <div class="t-btns">
+                        <button class="t-btn go" onclick="swStart()">▶ Start</button>
+                        <button class="t-btn stop" onclick="swPause()">⏸ Pause</button>
+                        <button class="t-btn rst" onclick="swReset()">↺ Reset</button>
+                    </div>
+                    <button class="t-btn rst" style="width:100%;margin-top:8px" onclick="swLap()">🏁 Lap</button>
+                    <div class="sw-laps" id="swLaps"></div>
+                </div>
+            </div>
+
+            <div class="rm-panel panel-alarm">
+                <div class="rm-panel-label">🔔 Alarms</div>
+                <div class="al-form">
+                    <input type="time" class="al-input" id="alTime">
+                    <input type="text" class="al-input" id="alLabel" placeholder="Label">
+                    <button class="al-add" onclick="alarmAdd()">+ Set Alarm</button>
+                </div>
+                <div class="al-list" id="alarmList"></div>
+            </div>
+
+            <div class="rm-panel panel-tasks">
+                <div class="rm-panel-label">✅ Tasks</div>
+                <div class="tk-stats">
+                    <div>Total: <b id="tkTotal">0</b></div>
+                    <div>Done: <b id="tkDone">0</b></div>
+                    <div>Pending: <b id="tkPend">0</b></div>
+                </div>
+                <div class="tk-form">
+                    <input type="text" class="tk-input" id="tkInput" placeholder="Add a task…" onkeydown="if(event.key==='Enter') { event.preventDefault(); taskAdd(); }">
+                    <select class="tk-pri" id="tkPri">
+                        <option value="high">🔴 High</option>
+                        <option value="med" selected>🟡 Medium</option>
+                        <option value="low">🟢 Low</option>
+                    </select>
+                    <button class="tk-add" onclick="taskAdd()">+</button>
+                </div>
+                <div class="tk-list" id="taskList"></div>
+            </div>
+
+            <div class="rm-panel panel-notes">
+                <div class="rm-panel-label">📝 Quick Notes</div>
+                <textarea class="note-area" id="noteArea" placeholder="Jot formulas..."></textarea>
+                <div class="note-footer">
+                    <span id="noteChars">0 chars</span>
+                    <button class="note-save" onclick="noteSave()">💾 Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alarm-toast" id="alarmToast">
+        <div class="toast-icon">🔔</div>
+        <div class="toast-body">
+            <h4 id="toastTitle">Alarm!</h4>
+            <p id="toastLabel">Time's up.</p>
+        </div>
+        <button class="toast-dismiss" onclick="toastDismiss()">Dismiss</button>
+    </div>
 
     <script>
-        async function uploadAndGrade() {
-            const file = document.getElementById('examFile').files[0];
-            const key = document.getElementById('answerKey').value;
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('answer_key', key);
+        /* =========================================
+           GLOBAL STATE & UPDATES
+        ========================================= */
+        const banner = document.getElementById("updateBanner");
+        const message = document.getElementById("updateMessage");
+        const link = document.getElementById("updateLink");
+        let audioCtx = null;
 
-            const response = await fetch('http://localhost:8000/grade', {
-                method: 'POST',
-                body: formData
+        const updates = [
+            { text: "SPOM Set A & B Prefinal Exams Are Now Available!", url: "./bin/exam/spom/espom.html" }
+        ];
+        let currentIndex = 0;
+
+        window.addEventListener("load", () => {
+            setTimeout(() => {
+                banner.classList.add("show");
+                showUpdate();
+                if (updates.length > 1) { 
+                    setInterval(showUpdate, 3000); 
+                }
+            }, 500);
+        });
+
+        function showUpdate(){
+            message.textContent = updates[currentIndex].text;
+            link.href = updates[currentIndex].url;
+            currentIndex = (currentIndex + 1) % updates.length;
+        }
+
+        function closeUpdate(){ banner.classList.remove("show"); }
+
+        /* =========================================
+           MOTIVATION LOGIC
+        ========================================= */
+        const quotes = [
+            { text: "Of the Adityas I am Visnu, of lights i am the radiant sun...", author: "Sri Krishna" },
+            { text: "Success comes from consistency.", author: "Marie Forleo" },
+            { text: "Dream big. Start small. Act now.", author: "Robin Sharma" },
+            { text: "You can sleep When you are Dead.", author: "Max Verstappen"}
+        ];
+
+        function showRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById("quote").textContent = quotes[randomIndex].text;
+            document.getElementById("motivationAuthor").textContent = " — " + quotes[randomIndex].author;
+        }
+        window.addEventListener("load", showRandomQuote);
+
+        /* =========================================
+           READ MODE CONTROLS
+        ========================================= */
+        const overlay = document.getElementById("readModeOverlay");
+
+        function openReadMode() { 
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            overlay.classList.add("rm-active");
+            setTimeout(() => overlay.classList.add("rm-visible"), 10);
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeReadMode() {
+            overlay.classList.remove("rm-visible");
+            setTimeout(() => { overlay.classList.remove("rm-active"); document.body.style.overflow = ""; }, 350);
+        }
+
+        /* ── CLOCK ── */
+        function tickClock() {
+            const now = new Date();
+            const H = String(now.getHours()).padStart(2,'0'), M = String(now.getMinutes()).padStart(2,'0'), S = String(now.getSeconds()).padStart(2,'0');
+            document.getElementById("rmClockHM").textContent = H + ":" + M;
+            document.getElementById("rmClockSec").textContent = ":" + S;
+            document.getElementById("rmClockDate").textContent = now.toDateString();
+            const h = now.getHours();
+            document.getElementById("rmGreeting").textContent = h < 12 ? "Good Morning ☀️" : h < 17 ? "Good Afternoon ⚡" : "Night Study 🌟";
+            alarmCheck(H + ":" + M);
+        }
+        setInterval(tickClock, 1000);
+
+        /* ── TIMER & STOPWATCH ── */
+        let timerIv = null, timerLeft = 0, timerOn = false;
+        function setTimerTab(t) {
+            document.getElementById("timerSection").style.display = t === "timer" ? "block" : "none";
+            document.getElementById("swSection").style.display = t === "sw" ? "block" : "none";
+            document.getElementById("ttabTimer").classList.toggle("on", t === "timer");
+            document.getElementById("ttabSW").classList.toggle("on", t === "sw");
+        }
+        function getTimerSecs() {
+            return (parseInt(document.getElementById("tHr").value) || 0) * 3600 + (parseInt(document.getElementById("tMin").value) || 0) * 60 + (parseInt(document.getElementById("tSec").value) || 0);
+        }
+        function fmtTime(s) {
+            const m = Math.floor((s % 3600) / 60), sec = s % 60;
+            return String(m).padStart(2,'0') + ":" + String(sec).padStart(2,'0');
+        }
+        function timerStart() {
+            if (timerOn) return;
+            if (!timerLeft) timerLeft = getTimerSecs();
+            timerOn = true;
+            timerIv = setInterval(() => {
+                if (--timerLeft <= 0) { clearInterval(timerIv); timerOn = false; beep(); toastShow("⏰ Done!", "Timer finished."); }
+                document.getElementById("timerDisp").textContent = fmtTime(timerLeft);
+            }, 1000);
+        }
+        function timerPause() { clearInterval(timerIv); timerOn = false; }
+        function timerReset() { timerPause(); timerLeft = getTimerSecs(); document.getElementById("timerDisp").textContent = fmtTime(timerLeft); }
+
+        let swOn = false, swIv = null, swMs = 0, swLaps = [];
+        function swStart() {
+            if (swOn) return; swOn = true;
+            const t0 = Date.now() - swMs;
+            swIv = setInterval(() => { swMs = Date.now() - t0; document.getElementById("swDisp").textContent = (swMs/1000).toFixed(1) + "s"; }, 100);
+        }
+        function swPause() { clearInterval(swIv); swOn = false; }
+        function swReset() { swPause(); swMs = 0; swLaps = []; document.getElementById("swDisp").textContent = "00:00.0"; document.getElementById("swLaps").innerHTML = ""; }
+        function swLap() { swLaps.push((swMs/1000).toFixed(1) + "s"); document.getElementById("swLaps").innerHTML = swLaps.join(', '); }
+
+        /* ── ALARMS & TASKS ── */
+        let alarms = [], alarmFired = {}, tasks = [];
+        function alarmAdd() {
+            const t = document.getElementById("alTime").value;
+            if (t) { alarms.push({time: t, label: document.getElementById("alLabel").value || "Alarm", id: Date.now()}); renderAlarms(); }
+        }
+        function alarmDel(id) { alarms = alarms.filter(a => a.id !== id); renderAlarms(); }
+        function renderAlarms() {
+            document.getElementById("alarmList").innerHTML = alarms.map(a => `<div class="al-item">${a.time} - ${a.label} <button onclick="alarmDel(${a.id})">🗑</button></div>`).join('');
+        }
+        function alarmCheck(hm) {
+            alarms.forEach(a => {
+                if (a.time === hm && !alarmFired[a.id]) { alarmFired[a.id] = true; beep(); toastShow("🔔 " + a.label, "Time's up!"); setTimeout(() => delete alarmFired[a.id], 60000); }
             });
-            const data = await response.json();
-            document.getElementById('result').innerText = JSON.stringify(data);
+        }
+
+        function taskAdd() {
+            const txt = document.getElementById("tkInput").value.trim();
+            if (txt) { tasks.push({txt, pri: document.getElementById("tkPri").value, done: false, id: Date.now()}); document.getElementById("tkInput").value = ""; renderTasks(); }
+        }
+        function taskToggle(id) { const t = tasks.find(x => x.id === id); if (t) t.done = !t.done; renderTasks(); }
+        function taskDel(id) { tasks = tasks.filter(x => x.id !== id); renderTasks(); }
+        function renderTasks() {
+            document.getElementById("tkTotal").textContent = tasks.length;
+            document.getElementById("tkDone").textContent = tasks.filter(x => x.done).length;
+            document.getElementById("taskList").innerHTML = tasks.map(t => `
+                <div class="tk-item">
+                    <span class="${t.done ? 'done' : ''}" onclick="taskToggle(${t.id})">${t.done ? '✅' : '⬜'} ${t.txt} [${t.pri}]</span>
+                    <button onclick="taskDel(${t.id})">🗑</button>
+                </div>`).join('');
+        }
+
+        /* ── NOTES & UTILS ── */
+        function noteSave() { localStorage.setItem("cn_notes", document.getElementById("noteArea").value); }
+        window.onload = () => { document.getElementById("noteArea").value = localStorage.getItem("cn_notes") || ""; renderTasks(); };
+
+        function toastShow(t, l) { document.getElementById("toastTitle").textContent = t; document.getElementById("toastLabel").textContent = l; document.getElementById("alarmToast").classList.add("show"); }
+        function toastDismiss() { document.getElementById("alarmToast").classList.remove("show"); }
+        function beep() {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.value = 880; osc.start(); 
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1);
+            osc.stop(audioCtx.currentTime + 1);
         }
     </script>
 </body>
